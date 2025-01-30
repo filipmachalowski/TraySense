@@ -385,6 +385,12 @@ namespace TraySense
             // Last 4 bits mark battery level
             // Battery level is on a scale 0(empty) - 8(full)
             int batterynumber0to8 = (battery0 & 0x0F);
+            // Sometimes battery can report status 9 when full
+            // Make it 8
+            if( batterynumber0to8 == 9)
+            {
+                batterynumber0to8 = 8;
+            }
             int batteryLevelPercent = batterynumber0to8 * 100 / 8;
             // Currently charging is 16 when bluetooth , 8 when usb and 0 when not charging
             // Old projects online only show one value for charging "8" "1000" no mentions of "16" "10000" New DS firmware changed it ?
