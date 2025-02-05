@@ -13,9 +13,15 @@ namespace TraySense
         private ContextMenuStrip _trayMenu;
         private HidDevice _dualSenseDevice;
         bool debugflag = false;
-        int refreshtime = 5000; // Interval for checking the controller in milliseconds (5s)
+        //Intervals for checking the controller in milliseconds
+        int refreshtime_searchingforcontroler = 5000; //(5s)
+        int refreshtime_between_checks = 120000; //(2min)
         string CurrentIcon = "default";
         int batterywarning;
+
+
+
+        int refreshtime;
         public Form1()
         {
             // Debug: List all embedded resources in exe
@@ -27,6 +33,7 @@ namespace TraySense
                 Debug.WriteLine(resourceName);
             }
             */
+            refreshtime = refreshtime_searchingforcontroler;
             InitializeComponent();
             InitializeTrayIcon();
             this.FormClosing += Form1_FormClosing;
@@ -275,8 +282,10 @@ namespace TraySense
                     _trayIcon.Icon = LoadEmbeddedIcon("TraySense.icons." + (GetIsSystemDarkTheme() ? "Darkmode" : "Lightmode") + "." + CurrentIcon + ".ico");
                     _batteryInfoLabel.Text = "Looking for Controller...";
                     _trayIcon.Text = "TraySense - Looking for Controller...";
+                    refreshtime = refreshtime_searchingforcontroler;
                     return;
                 }
+                else { refreshtime = refreshtime_between_checks; };
 
                 LogToRichTextBox($"Found DualSense controller: {_dualSenseDevice.GetProductName()}", Color.Green);
 
@@ -397,7 +406,7 @@ namespace TraySense
             bool isCharging = battery1 > 0;
 
             LogToRichTextBox("Battery: " + batterynumber0to8 + " which equals " + batteryLevelPercent + "%", Color.Yellow);
-            LogToRichTextBox("Charging status: " + isCharging + " raw data: " + battery1, Color.Yellow);
+            LogToRichTextBox("Charging status: " + isCharging + " | raw data: " + battery1, Color.Yellow);
 
             if (isCharging)
             {
@@ -407,7 +416,7 @@ namespace TraySense
             }
             else
             {
-                if (batterynumber0to8 >= 3)
+                if (batterynumber0to8 >= 1)
                 {
                     batterywarning = 9;
                 }
@@ -416,14 +425,14 @@ namespace TraySense
                     if (batterywarning != batterynumber0to8)
                     {
 
-                        if (batterynumber0to8 == 2)
-                        {
-                            _trayIcon.BalloonTipText = "DS#1 battery is at " + batteryLevelPercent + "%";
-                        }
-                        else
-                        {
-                            _trayIcon.BalloonTipText = "DS#1 battery is running low !\nCurrently at " + batteryLevelPercent + "%";
-                        }
+                        //if (batterynumber0to8 == 1)
+                       // {
+                       //     _trayIcon.BalloonTipText = "DS#1 battery is at " + batteryLevelPercent + "%";
+                       // }
+                       //else
+                       //{
+                            _trayIcon.BalloonTipText = "DS#1 battery is running low !";
+                       //}
                         _trayIcon.BalloonTipTitle = "TraySense";
                         _trayIcon.ShowBalloonTip(1000);
                         batterywarning = batterynumber0to8;
@@ -507,6 +516,7 @@ namespace TraySense
             {
                 LogToRichTextBox($"Error: {ex.Message}", Color.Red);
             }
+            refreshtime = refreshtime_searchingforcontroler;
         }
 
 
