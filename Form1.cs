@@ -372,6 +372,10 @@ namespace TraySense
                         // 0x01 when not mostly empty indicates "Basic Bluetooth", it sends button presses and some more info along with battery info but no charging status
                         // For reliability and charing info I still switch it to Full Bluetooth mode
                         LogToRichTextBox("Controller is in Basic Bluetooth mode.", Color.Cyan);
+                        // Set icon to unknown when before sending Magic Packet
+                        CurrentIcon = "unknown";
+                        _trayIcon.Icon = LoadEmbeddedIcon("TraySense.icons." + (GetIsSystemDarkTheme() ? "Darkmode" : "Lightmode") + "." + CurrentIcon + ".ico");
+                        LogToRichTextBox("Icon set to Unknown.", Color.DeepPink);
                         // If charging info is not provided use -111 to indicate N/A
                         DisplayBatteryInfo(inputBuffer[54], -111);
                         // Read "Magic Packet" to "wake" controller to 0x31 (Full Bluetooth mode)
