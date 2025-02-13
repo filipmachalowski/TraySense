@@ -377,7 +377,8 @@ namespace TraySense
                         _trayIcon.Icon = LoadEmbeddedIcon("TraySense.icons." + (GetIsSystemDarkTheme() ? "Darkmode" : "Lightmode") + "." + CurrentIcon + ".ico");
                         LogToRichTextBox("Icon set to Unknown.", Color.DeepPink);
                         // If charging info is not provided use -111 to indicate N/A
-                        DisplayBatteryInfo(inputBuffer[54], -111);
+                        //DisplayBatteryInfo(inputBuffer[54], -111);
+                        UpdateTrayLabel("Checking battery level...");
                         // Read "Magic Packet" to "wake" controller to 0x31 (Full Bluetooth mode)
                         WaketofullBT();
                     }
@@ -400,7 +401,7 @@ namespace TraySense
             int batterynumber0to8 = (battery0 & 0x0F);
             // Sometimes battery can report status 9 when full
             // Make it 8
-            if( batterynumber0to8 == 9)
+            if( batterynumber0to8 > 8)
             {
                 batterynumber0to8 = 8;
             }
